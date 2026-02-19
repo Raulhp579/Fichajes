@@ -1,0 +1,178 @@
+import {
+  Component,
+  AfterViewInit,
+  OnDestroy,
+  PLATFORM_ID,
+  inject,
+  NgZone,
+  ChangeDetectorRef,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+@Component({
+  selector: 'app-mapa',
+  standalone: true,
+  imports: [],
+  templateUrl: './mapa.component.html',
+  styleUrls: ['./mapa.component.css'],
+})
+export class MapaComponent implements AfterViewInit, OnDestroy {
+  private platformId = inject(PLATFORM_ID);
+  private ngZone = inject(NgZone);
+  private cd = inject(ChangeDetectorRef);
+  private map: any;
+
+  ngAfterViewInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.initMap();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.map) {
+      this.map.remove();
+      this.map = null; // Clean up reference
+    }
+  }
+
+  private async initMap() {
+    // Dynamically import Leaflet only in the browser
+    const L = await import('leaflet').then((m) => m.default || m);
+
+    // Fix icon issues
+    this.configurarIconos(L);
+
+    // Initialize map
+    const container = L.DomUtil.get('map');
+    if (container != null) {
+      if ((container as any)._leaflet_id != null) {
+        container.outerHTML = container.outerHTML; // Hack to clear the container if we lost the reference
+        // Or better, try to find the map instance if possible, but the improved check below is standard
+      }
+    }
+
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
+
+    // Double check if there is an existing map on the element to avoid the specific error
+    // Leaflet throws "Map container is already initialized" if the element has _leaflet_id
+    const element = document.getElementById('map');
+    if (element && (element as any)._leaflet_id) {
+      // This is the crucial part: if the element is already initialized, we must clear it
+      // Since we don't have the reference to the old map object to call .remove(),
+      // we can resort to re-creating the element or creating a dummy map to remove correctly.
+      // However, if we track this.map correctly on destroy, this shouldn't happen.
+      // The error suggests `this.map` might be null but the DOM element is still bound.
+      (element as any)._leaflet_id = null;
+    }
+
+    this.map = L.map('map').setView([37.8802, -4.8041], 14);
+
+    // Add tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(this.map);
+
+    // Icono rojo para el destino (Medac)
+    const redIcon = L.icon({
+      iconUrl:
+        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+
+    // Medac Marker (Rojo)
+    const medacMarker = L.marker([37.8802566, -4.8040947], { icon: redIcon }).bindPopup(
+      '<b>Medac Arena</b><br>Córdoba',
+    );
+    medacMarker.addTo(this.map);
+
+    // Zona de fichaje (Círculo Verde - 200m)
+    L.circle([37.8802566, -4.8040947], {
+      color: 'green',
+      fillColor: '#28a745',
+      fillOpacity: 0.2,
+      radius: 200,
+    }).addTo(this.map);
+
+    // User Location (Azul / Default)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.ngZone.run(() => {
+            // Check if map still exists (component might be destroyed)
+            if (!this.map) return;
+            const { latitude, longitude } = position.coords;
+
+            // Check distance to Medac Arena
+            const medacLat = 37.8802566;
+            const medacLon = -4.8040947;
+            const distance = this.calculateDistance(latitude, longitude, medacLat, medacLon);
+
+            if (distance > 0.2) {
+              // 0.2 km = 200m
+              this.errorMessage =
+                'No puedes fichar: Estás a más de 200 metros de tu puesto de trabajo.';
+            } else {
+              this.errorMessage = '';
+            }
+            this.cd.detectChanges(); // Ensure UI updates and prevent NG0100
+
+            // Marcador de tu ubicación actual (Icono por defecto - Azul)
+            const miUbicacion = L.marker([latitude, longitude]).bindPopup('<b>¡Estás aquí!</b>');
+            miUbicacion.addTo(this.map);
+
+            // Opcional: centrar el mapa en tu ubicación
+            // this.map.setView([latitude, longitude], 14);
+          });
+        },
+        (error) => {
+          console.error('Error obteniendo la ubicación:', error);
+        },
+      );
+    }
+  }
+
+  // Haversine formula to calculate distance in km
+  calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Radius of the earth in km
+    const dLat = this.deg2rad(lat2 - lat1);
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.deg2rad(lat1)) *
+        Math.cos(this.deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in km
+    return d;
+  }
+
+  deg2rad(deg: number): number {
+    return deg * (Math.PI / 180);
+  }
+
+  errorMessage: string = '';
+
+  private configurarIconos(L: any) {
+    const iconDefault = L.icon({
+      iconRetinaUrl:
+        'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      tooltipAnchor: [16, -28],
+      shadowSize: [41, 41],
+    });
+    L.Marker.prototype.options.icon = iconDefault;
+  }
+}

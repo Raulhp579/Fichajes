@@ -1,0 +1,378 @@
+<div class="table-shell animate__animated animate__fadeIn">
+  <div class="table-head">
+    <div class="table-title">
+      <div class="kicker">Usuarios</div>
+      <div class="h1">Gestión de usuarios</div>
+    </div>
+
+    <div class="table-actions">
+      <!-- Search Input -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          placeholder="Buscar por nombre..."
+          [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChange()"
+        />
+      </mat-form-field>
+
+      <!-- Add Button -->
+      <button mat-flat-button class="btn-primary" (click)="openCreate()">
+        <mat-icon>add</mat-icon>
+        Nuevo Usuario
+      </button>
+    </div>
+  </div>
+
+  <div class="table-card mat-elevation-z2">
+    <table mat-table [dataSource]="datasource" class="mat-table">
+      <!-- ID -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef class="col-id">Id</th>
+        <td mat-cell *matCellDef="let element" class="col-id">
+          <span class="id-pill">#{{ element.id }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Nombre -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Usuario</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="user-cell">
+            <span class="avatar">{{ (element.name || 'U')[0] }}</span>
+            <div class="user-meta">
+              <span class="user-name">{{ element.name }}</span>
+              <span class="user-sub">ID: {{ element.id }}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="email">{{ element.email }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="botones">
+        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+        <td mat-cell *matCellDef="let element" class="col-actions">
+          <div class="row-actions">
+            <button
+              mat-flat-button
+              class="btn-download"
+              type="button"
+              (click)="openDownload(element)"
+            >
+              <mat-icon>download</mat-icon>
+              Descargar registro
+            </button>
+
+            <button
+              mat-icon-button
+              class="icon-btn icon-btn--edit"
+              type="button"
+              aria-label="Editar"
+              (click)="openEdit(element)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              class="icon-btn icon-btn--delete"
+              type="button"
+              aria-label="Borrar"
+              (click)="deleteUser(element.id)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
+
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="data-row"></tr>
+    </table>
+
+    <mat-paginator [pageSize]="8" [pageSizeOptions]="[8, 16, 24]" showFirstLastButtons>
+    </mat-paginator>
+
+    @if (datasource.data.length === 0) {
+      <div class="empty">
+        <div class="empty-title">No hay usuarios</div>
+        <div class="empty-sub">Cuando existan, aparecerán en esta tabla.</div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+@if (isEditOpen) {
+  <div class="modal-overlay animate__animated animate__fadeIn" (click)="closeEdit()">
+    <mat-card class="modal-card" appearance="outlined" (click)="$event.stopPropagation()">
+      <mat-card-header class="modal-head">
+        <div class="head-left">
+          <div class="head-icon">
+            <mat-icon>person_edit</mat-icon>
+          </div>
+
+          <div class="head-text">
+            <mat-card-title>Editar Usuario</mat-card-title>
+            <mat-card-subtitle>Actualiza los datos del usuario</mat-card-subtitle>
+          </div>
+        </div>
+
+        <button
+          mat-icon-button
+          class="close-btn"
+          type="button"
+          aria-label="Cerrar"
+          (click)="closeEdit()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content class="modal-body">
+        <form #editForm="ngForm" class="form-grid">
+          <!-- Nombre -->
+          <mat-form-field>
+            <mat-label>Nombre</mat-label>
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="currentUser.name"
+              name="name"
+              required
+              minlength="3"
+              #nameInput="ngModel"
+            />
+            @if (nameInput.invalid && (nameInput.dirty || nameInput.touched)) {
+              <mat-error>El nombre es obligatorio (mín. 3 caracteres)</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Email -->
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              type="email"
+              [(ngModel)]="currentUser.email"
+              name="email"
+              required
+              email
+              #emailInput="ngModel"
+            />
+            @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+              <mat-error>Introduce un email válido</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Contraseña Opcional -->
+          <mat-form-field>
+            <mat-label>Nueva Contraseña (Opcional)</mat-label>
+            <input
+              matInput
+              type="password"
+              [(ngModel)]="currentUser.password"
+              name="password"
+              placeholder="Dejar en blanco para mantener"
+              minlength="6"
+              #passInput="ngModel"
+            />
+            @if (passInput.invalid && (passInput.dirty || passInput.touched)) {
+              <mat-error>La contraseña debe tener al menos 6 caracteres</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions class="modal-actions" align="end">
+        <button mat-stroked-button class="btn-ghost" type="button" (click)="closeEdit()">
+          Cancelar
+        </button>
+
+        <button
+          mat-raised-button
+          class="btn-primary"
+          type="button"
+          (click)="updateUser()"
+          [disabled]="editForm.invalid"
+        >
+          Guardar cambios
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}
+
+<!-- CREATE MODAL -->
+@if (isCreateOpen) {
+  <div class="modal-overlay animate__animated animate__fadeIn" (click)="closeCreate()">
+    <mat-card class="modal-card" appearance="outlined" (click)="$event.stopPropagation()">
+      <mat-card-header class="modal-head">
+        <div class="head-left">
+          <div class="head-icon">
+            <mat-icon>person_add</mat-icon>
+          </div>
+
+          <div class="head-text">
+            <mat-card-title>Nuevo Usuario</mat-card-title>
+            <mat-card-subtitle>Añade un nuevo usuario al sistema</mat-card-subtitle>
+          </div>
+        </div>
+
+        <button
+          mat-icon-button
+          class="close-btn"
+          type="button"
+          aria-label="Cerrar"
+          (click)="closeCreate()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content class="modal-body">
+        <form #createForm="ngForm" class="form-grid">
+          <!-- Nombre -->
+          <mat-form-field>
+            <mat-label>Nombre</mat-label>
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="newUser.name"
+              name="new_name"
+              required
+              minlength="3"
+              #newName="ngModel"
+            />
+            @if (newName.invalid && (newName.dirty || newName.touched)) {
+              <mat-error>El nombre es obligatorio</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Email -->
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              type="email"
+              [(ngModel)]="newUser.email"
+              name="new_email"
+              required
+              email
+              #newEmail="ngModel"
+            />
+            @if (newEmail.invalid && (newEmail.dirty || newEmail.touched)) {
+              <mat-error>Introduce un email válido</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Contraseña -->
+          <mat-form-field>
+            <mat-label>Contraseña</mat-label>
+            <input
+              matInput
+              type="password"
+              [(ngModel)]="newUser.password"
+              name="new_password"
+              required
+              minlength="6"
+              #newPass="ngModel"
+            />
+            @if (newPass.invalid && (newPass.dirty || newPass.touched)) {
+              <mat-error>La contraseña es obligatoria (mín. 6 caracteres)</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions class="modal-actions" align="end">
+        <button mat-stroked-button class="btn-ghost" type="button" (click)="closeCreate()">
+          Cancelar
+        </button>
+
+        <button
+          mat-raised-button
+          class="btn-primary"
+          type="button"
+          (click)="createUser()"
+          [disabled]="createForm.invalid"
+        >
+          Crear Usuario
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}
+
+<!-- DOWNLOAD MODAL -->
+@if (isDownloadOpen) {
+  <div class="modal-overlay animate__animated animate__fadeIn" (click)="closeDownload()">
+    <mat-card class="modal-card" appearance="outlined" (click)="$event.stopPropagation()">
+      <mat-card-header class="modal-head">
+        <div class="head-left">
+          <div class="head-icon">
+            <mat-icon>download</mat-icon>
+          </div>
+
+          <div class="head-text">
+            <mat-card-title>Descargar Registro</mat-card-title>
+            <mat-card-subtitle>Seleccione Mes y Año</mat-card-subtitle>
+          </div>
+        </div>
+
+        <button
+          mat-icon-button
+          class="close-btn"
+          type="button"
+          aria-label="Cerrar"
+          (click)="closeDownload()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content class="modal-body">
+        <div class="form-grid">
+          <!-- Mes -->
+          <mat-form-field>
+            <mat-label>Mes (1-12)</mat-label>
+            <input
+              matInput
+              type="number"
+              min="1"
+              max="12"
+              [(ngModel)]="downloadData.month"
+              name="download_month"
+            />
+          </mat-form-field>
+
+          <!-- Año -->
+          <mat-form-field>
+            <mat-label>Año</mat-label>
+            <input matInput type="number" [(ngModel)]="downloadData.year" name="download_year" />
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions class="modal-actions" align="end">
+        <button mat-stroked-button class="btn-ghost" type="button" (click)="closeDownload()">
+          Cancelar
+        </button>
+
+        <button mat-raised-button class="btn-primary" type="button" (click)="downloadRecord()">
+          Descargar PDF
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}

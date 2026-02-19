@@ -1,0 +1,116 @@
+<div class="contenedor animate__animated animate__fadeIn">
+  <div class="body">
+    <div class="grid-home">
+      <!-- Card principal REDISEÑADA: (Metrics + Table) | Button -->
+      <section class="card card-main">
+        <!-- Left Wrapper: Metrics Top + Table Bottom -->
+        <div class="card-left-wrapper">
+          <!-- 1. Metrics Row (Horizontal) -->
+          <div class="metrics-row">
+            @if (working) {
+              <div class="metric">
+                <div class="metric-label">Hora de entrada</div>
+                <div class="metric-value">{{ infoTime }}</div>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="metric">
+                <div class="metric-label">Tiempo trabajado</div>
+                <div class="metric-value">{{ timerDisplay }}</div>
+              </div>
+            } @else {
+              <div class="metric">
+                <div class="metric-label">Hora de salida</div>
+                <div class="metric-value">{{ infoTime }}</div>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="metric">
+                <div class="metric-label">Tiempo trabajado</div>
+                <div class="metric-value">{{ timerDisplay }}</div>
+              </div>
+            }
+          </div>
+
+          <!-- 2. Table Section -->
+          <div class="table-section">
+            <div class="mini-table-header">
+              <h3>Últimos fichajes</h3>
+              <a routerLink="/myEntries" class="link-mini">Ver todos</a>
+            </div>
+            <div class="mini-table-container">
+              <div class="mini-row head">
+                <span>Entrada</span>
+                <span>Salida</span>
+                <span class="right">Duración</span>
+              </div>
+              @for (entry of lastEntries(); track entry.id) {
+                <div class="mini-row">
+                  <span>{{ entry.clock_in_at | date: 'HH:mm' }}</span>
+                  <span>{{
+                    entry.clock_out_at ? (entry.clock_out_at | date: 'HH:mm') : '...'
+                  }}</span>
+                  <span class="right">{{
+                    calculateDuration(entry.clock_in_at, entry.clock_out_at)
+                  }}</span>
+                </div>
+              } @empty {
+                <div class="mini-row empty">
+                  <span>Sin fichajes recientes</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Right: Clock Button -->
+        <div class="card-right-action animate__animated animate__pulse">
+          @if (working) {
+            <div class="clock-circle">
+              <mat-icon class="icono-reloj-rojo">schedule</mat-icon>
+              <button
+                class="btn-primary-red"
+                type="button"
+                (click)="inOut()"
+                [disabled]="loading()"
+              >
+                @if (loading()) {
+                  <span class="loader"></span> ...
+                } @else {
+                  Salida
+                }
+              </button>
+            </div>
+          } @else {
+            <div class="clock-circle">
+              <mat-icon class="icono-reloj-verde">schedule</mat-icon>
+              <button
+                class="btn-primary-green"
+                type="button"
+                (click)="inOut()"
+                [disabled]="loading()"
+              >
+                @if (loading()) {
+                  <span class="loader"></span> ...
+                } @else {
+                  Entrada
+                }
+              </button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Card derecha: MAPA -->
+      <aside class="card card-side">
+        <div class="card-head">
+          <div>
+            <h3 class="card-title">Ubicación</h3>
+          </div>
+        </div>
+
+        <div class="map-wrap">
+          <app-mapa></app-mapa>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>

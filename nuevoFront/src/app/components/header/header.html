@@ -1,0 +1,42 @@
+<mat-toolbar class="topbar" role="banner">
+  <div class="left">
+    @if (role() == 'admin') {
+      <button
+        mat-icon-button
+        class="icon"
+        (click)="onToggle()"
+        type="button"
+        aria-label="Abrir menú"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+    }
+
+    <a routerLink="/home" class="app-title">Gestor Fichajes</a>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="right">
+    <div class="clock-display">
+      <span class="clock-time">{{ currentTime() | date: 'HH:mm:ss' }}</span>
+    </div>
+
+    <div class="brand">
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-btn">
+        <div class="logo">{{ user()?.name?.charAt(0).toUpperCase() }}</div>
+      </button>
+
+      <mat-menu #userMenu="matMenu" class="custom-menu">
+        <button mat-menu-item routerLink="/profile">
+          <mat-icon>person</mat-icon>
+          <span>Perfil</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>

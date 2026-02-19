@@ -1,0 +1,66 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Observable } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TimeEntrieService {
+  private enlace: string = '/api/timeEntrie';
+  private baseUrl: string = '/api';
+
+  private getHeaders(): HttpHeaders {
+    let token = '';
+    if (isPlatformBrowser(this.platformId)) {
+      token = localStorage.getItem('token') || '';
+    }
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: '*/*',
+    });
+  }
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {}
+
+  getTimeEntries(userId?: number): Observable<any> {
+    const url = userId ? `${this.enlace}?user_id=${userId}` : this.enlace;
+    return this.http.get(url, { headers: this.getHeaders() });
+  }
+
+  createTimeEntrie(timeEntrie: any): Observable<any> {
+    return this.http.post(this.enlace, timeEntrie, { headers: this.getHeaders() });
+  }
+
+  updateTimeEntrie(id: number, timeEntrie: any): Observable<any> {
+    return this.http.put(`${this.enlace}/${id}`, timeEntrie, { headers: this.getHeaders() });
+  }
+
+  deleteTimeEntrie(id: number): Observable<any> {
+    return this.http.delete(`${this.enlace}/${id}`, { headers: this.getHeaders() });
+  }
+
+  getTimeEntrieById(id: number): Observable<any> {
+    return this.http.get(`${this.enlace}/${id}`, { headers: this.getHeaders() });
+  }
+
+  createWithAuth(location: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/clock_in_out`, location, { headers: this.getHeaders() });
+  }
+
+  take3(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/takeThree`, { headers: this.getHeaders() });
+  }
+
+  getAllOfOneUser(date?: string): Observable<any> {
+    let url = `${this.baseUrl}/getAllOfOneUser`;
+    if (date) {
+      url += `?date=${date}`;
+    }
+    return this.http.get(url, { headers: this.getHeaders() });
+  }
+}

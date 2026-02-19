@@ -1,0 +1,453 @@
+.table-shell {
+  margin-top: 18px;
+}
+
+.table-head {
+  display: flex;
+  flex-direction: column; /* Stack Title on top of Actions */
+  align-items: stretch;
+  gap: 24px; /* Space between Title and Actions row */
+  margin: 6px 2px 24px;
+}
+
+.table-title .kicker {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary, rgba(15, 23, 42, 0.7));
+}
+
+.table-title .h1 {
+  font-size: 18px;
+  font-weight: 850;
+  color: rgba(15, 23, 42, 0.92);
+  margin-top: 2px;
+}
+
+.table-actions .hint {
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+/* Card */
+.table-card {
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* Tabla */
+.mat-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Header sticky + look moderno */
+.header-row th.mat-mdc-header-cell {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  background: linear-gradient(180deg, #f8fafc, #f2f5fb);
+  color: rgba(15, 23, 42, 0.72);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+/* Celdas */
+th.mat-mdc-header-cell,
+td.mat-mdc-cell {
+  padding: 14px 16px;
+}
+
+td.mat-mdc-cell {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  color: rgba(15, 23, 42, 0.86);
+  font-size: 14px;
+}
+
+/* Zebra + hover */
+.data-row:nth-child(even) td.mat-mdc-cell {
+  background: rgba(2, 6, 23, 0.015);
+}
+
+.data-row:hover td.mat-mdc-cell {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+/* Column sizes */
+.col-id {
+  width: 90px;
+}
+.col-actions {
+  width: 120px;
+  text-align: right;
+}
+
+/* Pills / chips */
+.id-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+  background: rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+  border: 1px solid transparent;
+}
+.chip--warn {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: rgba(120, 53, 15, 0.95);
+}
+
+/* User cell */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(59, 130, 246, 0.85);
+}
+
+.user-name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Date cell */
+.date-cell {
+  display: grid;
+  line-height: 1.1;
+  gap: 2px;
+}
+.date-main {
+  font-weight: 750;
+}
+.date-sub {
+  font-size: 12px;
+  color: var(--text-secondary, rgba(15, 23, 42, 0.7));
+}
+
+/* Actions */
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(15, 23, 42, 0.04);
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.06);
+  border-color: rgba(15, 23, 42, 0.16);
+}
+
+.icon-btn--edit {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+.icon-btn--edit mat-icon {
+  color: rgba(29, 78, 216, 0.95);
+}
+
+.icon-btn--delete {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+.icon-btn--delete mat-icon {
+  color: rgba(185, 28, 28, 0.95);
+}
+
+/* Empty */
+.empty {
+  padding: 24px 18px;
+  text-align: center;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  background: rgba(2, 6, 23, 0.01);
+}
+.empty-title {
+  font-weight: 850;
+  color: rgba(15, 23, 42, 0.88);
+}
+.empty-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-secondary, rgba(15, 23, 42, 0.7));
+}
+
+/* Responsive: en pantallas pequeñas, que respire */
+@media (max-width: 720px) {
+  th.mat-mdc-header-cell,
+  td.mat-mdc-cell {
+    padding: 12px 12px;
+  }
+  .col-actions {
+    width: 96px;
+  }
+}
+.tabs {
+  margin: 6px 0 10px;
+}
+
+mat-paginator {
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  background: #fff;
+}
+
+:host {
+  display: block;
+}
+
+/* Card como modal */
+.modal-card {
+  width: min(560px, 92vw);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.22);
+  z-index: 1000;
+}
+
+/* Header */
+.modal-head {
+  padding: 16px 16px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: linear-gradient(180deg, #0f172a, #111c33);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.head-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: rgba(59, 130, 246, 0.18);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.head-icon mat-icon {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.head-text mat-card-title {
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+.head-text mat-card-subtitle {
+  margin: 2px 0 0;
+  color: rgba(226, 232, 240, 0.75);
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.close-btn mat-icon {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Body */
+.modal-body {
+  padding: 18px;
+  background: #fff;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.full {
+  width: 100%;
+}
+
+/* Hint */
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(2, 6, 23, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: rgba(15, 23, 42, 0.7);
+  font-weight: 600;
+  font-size: 13px;
+}
+.hint mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Actions */
+.modal-actions {
+  padding: 0 18px 18px;
+  gap: 10px;
+  background: #fff;
+}
+
+/* Botones (alineados al estilo que usas) */
+.btn-primary {
+  border-radius: 12px !important;
+  height: 44px;
+  background-color: rgb(24, 58, 138) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 20px rgba(24, 58, 138, 0.22) !important;
+}
+
+.btn-ghost {
+  border-radius: 12px !important;
+  height: 44px;
+  border-color: rgb(226, 232, 240) !important;
+  color: rgb(59, 93, 163) !important;
+  background: #fff !important;
+}
+
+/* Quita el “barrita rara” del outline en algunos temas */
+:host ::ng-deep .mat-mdc-form-field .mdc-notched-outline__leading {
+  border-right: 0 !important;
+}
+
+/* Overlay centrado */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: grid;
+  place-items: center;
+
+  padding: 18px;
+  background: rgba(2, 6, 23, 0.55);
+  backdrop-filter: blur(6px);
+
+  /* si la tarjeta es alta, que permita scroll del overlay */
+  overflow: auto;
+  margin: auto;
+}
+
+/* Card como modal (tu estilo, pero ahora centrada) */
+.modal-card {
+  width: min(560px, 92vw);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.22);
+
+  /* para que no se pegue arriba cuando hay scroll */
+  margin: auto;
+}
+
+.table-actions {
+  display: flex !important;
+  justify-content: space-between !important; /* Force Filter Left, Button Right */
+  align-items: center !important; /* Force Vertically Centered */
+  width: 100% !important;
+  margin-bottom: 24px;
+}
+
+.filter-field {
+  width: 300px;
+  font-size: 14px;
+}
+
+/* HIDE SUBSCRIPT/HINT SPACE for perfect centering */
+.filter-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Adjust mat-form-field to look cleaner */
+.filter-field ::ng-deep .mat-mdc-text-field-wrapper {
+  background-color: white !important;
+  border-radius: 10px;
+  height: 48px;
+  padding: 0 12px;
+}
+
+.filter-field ::ng-deep .mat-mdc-form-field-flex {
+  height: 48px;
+  align-items: center;
+}
+
+.filter-field ::ng-deep .mdc-notched-outline__leading,
+.filter-field ::ng-deep .mdc-notched-outline__notch,
+.filter-field ::ng-deep .mdc-notched-outline__trailing {
+  border-color: #e2e8f0 !important;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #b91c1c;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.error-banner mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

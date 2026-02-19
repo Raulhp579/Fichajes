@@ -1,0 +1,143 @@
+<div class="profile-container">
+  <!-- Aurora Background (handled in CSS) -->
+
+  <div class="glass-card">
+    <!-- HEADER -->
+    <div class="profile-header">
+      <div class="avatar-wrapper">
+        @if (user()?.name) {
+          <span class="avatar-text">{{ user()?.name?.charAt(0).toUpperCase() }}</span>
+        } @else {
+          <mat-icon>person</mat-icon>
+        }
+      </div>
+      <div class="header-info">
+        <h1>{{ user()?.name | titlecase }}</h1>
+        <p class="role-pill">{{ user()?.role | titlecase }}</p>
+      </div>
+    </div>
+
+    <!-- TABS NAVIGATION -->
+    <div class="tabs-container">
+      <button
+        class="tab-btn"
+        [class.active]="currentTab() === 'activity'"
+        (click)="setTab('activity')"
+      >
+        <mat-icon>bar_chart</mat-icon>
+        <span>Actividad</span>
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="currentTab() === 'security'"
+        (click)="setTab('security')"
+      >
+        <mat-icon>lock</mat-icon>
+        <span>Seguridad</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="currentTab() === 'info'" (click)="setTab('info')">
+        <mat-icon>info</mat-icon>
+        <span>Información</span>
+      </button>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content-area">
+      <!-- TAB: ACTIVITY -->
+      @if (currentTab() === 'activity') {
+        <div class="tab-content fade-in">
+          <div class="chart-wrapper">
+            <canvas
+              baseChart
+              [data]="lineChartData"
+              [options]="lineChartOptions"
+              [legend]="lineChartLegend"
+              [type]="'line'"
+            >
+            </canvas>
+          </div>
+
+          <div class="stats-row">
+            @for (stat of recentStats(); track stat.date) {
+              <div class="stat-pill">
+                <span class="stat-day">{{ stat.day }}</span>
+                <span class="stat-hours">{{ stat.hours }}h</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- TAB: SECURITY -->
+      @if (currentTab() === 'security') {
+        <div class="tab-content fade-in">
+          <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="security-form">
+            <div class="input-group">
+              <label>Contraseña Actual</label>
+              <input formControlName="current_password" type="password" placeholder="••••••••" />
+            </div>
+
+            <div class="input-group">
+              <label>Nueva Contraseña</label>
+              <input
+                formControlName="new_password"
+                type="password"
+                placeholder="Mínimo 8 caracteres"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>Confirmar Nueva Contraseña</label>
+              <input
+                formControlName="new_password_confirmation"
+                type="password"
+                placeholder="Repite la contraseña"
+              />
+            </div>
+
+            @if (passwordForm.invalid && passwordForm.dirty) {
+              <div class="error-msg">Please check the fields</div>
+            }
+
+            <button class="action-btn" type="submit" [disabled]="passwordForm.invalid">
+              Actualizar
+            </button>
+          </form>
+        </div>
+      }
+
+      <!-- TAB: INFO -->
+      @if (currentTab() === 'info') {
+        <div class="tab-content fade-in">
+          <div class="info-list">
+            <div class="info-item">
+              <div class="icon-box"><mat-icon>email</mat-icon></div>
+              <div>
+                <label>Email</label>
+                <p>{{ user()?.email }}</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="icon-box"><mat-icon>calendar_today</mat-icon></div>
+              <div>
+                <label>Miembro desde</label>
+                <p>{{ user()?.created_at | date: 'mediumDate' }}</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="icon-box"><mat-icon>badge</mat-icon></div>
+              <div>
+                <label>ID Usuario</label>
+                <p>#{{ user()?.id }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

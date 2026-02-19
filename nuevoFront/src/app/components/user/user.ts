@@ -1,0 +1,209 @@
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+
+import { UserService } from '../../services/user-service';
+
+@Component({
+  selector: 'app-user',
+  standalone: true,
+  imports: [
+    MatTableModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+  ],
+  templateUrl: './user.html',
+  styleUrl: './user.css',
+})
+export class User implements OnInit, AfterViewInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  datasource = new MatTableDataSource<any>([]);
+  displayedColumns: string[] = ['id', 'nombre', 'email', 'botones'];
+
+  // Modal State
+  isEditOpen = false;
+  isCreateOpen = false;
+  isDownloadOpen = false;
+
+  // Create / Edit Objects
+  currentUser: any = { id: 0, name: '', email: '', password: '' };
+  newUser: any = { name: '', email: '', password: '' };
+  downloadData: any = { userId: 0, month: '', year: '' };
+
+  // Search
+  searchText: string = '';
+
+  // Modal Background Click Safety
+  private isOverlayClick = false;
+
+  constructor(private userService: UserService) {}
+
+  onOverlayMouseDown(event: MouseEvent) {
+    // Only register if the actual target is the overlay (not inner content)
+    this.isOverlayClick = event.target === event.currentTarget;
+  }
+
+  handleOverlayClose(event: MouseEvent, closeFn: () => void) {
+    // Both mousedown and click must be on the overlay
+    if (this.isOverlayClick && event.target === event.currentTarget) {
+      closeFn();
+    }
+    this.isOverlayClick = false; // Reset
+  }
+
+  async loadTable() {
+    const users = await firstValueFrom(this.userService.verUsuarios(this.searchText));
+    this.datasource.data = users;
+    if (this.paginator) {
+      this.datasource.paginator = this.paginator;
+    }
+  }
+
+  async ngOnInit() {
+    this.loadTable();
+  }
+
+  onSearchChange() {
+    this.loadTable();
+  }
+
+  ngAfterViewInit() {
+    this.datasource.paginator = this.paginator;
+    this.paginator.pageSize = 8;
+  }
+
+  deleteUser(id_user: number) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este usuario?')) return;
+
+    this.userService.borrarUsuario(id_user).subscribe((response) => {
+      console.log(response);
+      this.loadTable();
+    });
+  }
+
+  // --- EDIT ---
+  openEdit(user: any) {
+    this.currentUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: '',
+    };
+    this.isEditOpen = true;
+  }
+
+  closeEdit() {
+    this.isEditOpen = false;
+    this.currentUser = { id: 0, name: '', email: '', password: '' };
+  }
+
+  async updateUser() {
+    try {
+      if (!this.currentUser.id) return;
+
+      const payload: any = {
+        name: this.currentUser.name,
+        email: this.currentUser.email,
+      };
+
+      if (this.currentUser.password && this.currentUser.password.trim() !== '') {
+        payload.password = this.currentUser.password;
+      }
+
+      await firstValueFrom(this.userService.editarUsuario(this.currentUser.id, payload));
+
+      this.closeEdit();
+      await this.loadTable();
+      alert('Usuario actualizado correctamente');
+    } catch (error: any) {
+      console.error('Error updating user', error);
+      alert(error.error?.error || 'Error al actualizar el usuario');
+    }
+  }
+
+  // --- CREATE ---
+  openCreate() {
+    this.newUser = { name: '', email: '', password: '' };
+    this.isCreateOpen = true;
+  }
+
+  closeCreate() {
+    this.isCreateOpen = false;
+    this.newUser = { name: '', email: '', password: '' };
+  }
+
+  async createUser() {
+    try {
+      // Basic validation
+      if (!this.newUser.name || !this.newUser.email || !this.newUser.password) {
+        alert('Por favor complete todos los campos');
+        return;
+      }
+
+      await firstValueFrom(this.userService.crearUsuario(this.newUser));
+
+      this.closeCreate();
+      await this.loadTable();
+      alert('Usuario creado correctamente');
+    } catch (error: any) {
+      console.error('Error creating user', error);
+      alert(error.error?.error || 'Error al crear el usuario');
+    }
+  }
+
+  // --- DOWNLOAD PDF ---
+  openDownload(user: any) {
+    this.downloadData = { userId: user.id, month: '', year: '' };
+    this.isDownloadOpen = true;
+  }
+
+  closeDownload() {
+    this.isDownloadOpen = false;
+    this.downloadData = { userId: 0, month: '', year: '' };
+  }
+
+  async downloadRecord() {
+    try {
+      if (!this.downloadData.month || !this.downloadData.year) {
+        alert('Por favor introduzca mes y año');
+        return;
+      }
+
+      const blob = await firstValueFrom(
+        this.userService.downloadPdf(
+          this.downloadData.userId,
+          this.downloadData.month,
+          this.downloadData.year,
+        ),
+      );
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Registro_Jornada_${this.downloadData.month}_${this.downloadData.year}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+
+      this.closeDownload();
+    } catch (error: any) {
+      console.error('Error downloading PDF', error);
+      alert('Error al descargar el PDF. Asegúrese de que existen registros para esa fecha.');
+    }
+  }
+}

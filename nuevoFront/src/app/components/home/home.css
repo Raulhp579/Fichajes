@@ -1,0 +1,306 @@
+/* Contenedor: pegado arriba */
+.contenedor {
+  margin-top: 0;
+  background: transparent;
+}
+
+/* Barra HOME (subheader) */
+.div-titulo {
+  display: flex;
+  align-items: center;
+  height: 54px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(226, 232, 240);
+  border-radius: 14px;
+  padding: 0 16px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+  margin-bottom: 20px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 900;
+  color: rgb(15, 23, 42);
+}
+
+/* Contenido */
+.body {
+  padding: 14px 0 0;
+}
+
+.grid-home {
+  margin-top: 0;
+  display: grid;
+  grid-template-areas: 'main side';
+  grid-template-columns: 2fr 1fr; /* Main card takes more space */
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* Card base */
+.card {
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(226, 232, 240);
+  border-radius: 18px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+/* Card principal (Fichar) - Redesigned: Left Wrap + Right Btn */
+.card-main {
+  grid-area: main;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0;
+  padding: 0;
+  min-height: 220px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- Left Wrapper: Metrics + Table --- */
+.card-left-wrapper {
+  flex: 2;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border-right: 1px solid rgb(241, 245, 249);
+}
+
+/* 1. Metrics Row */
+.metrics-row {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center horizontally */
+  gap: 60px; /* Increased gap */
+  width: 100%;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center items vertically */
+  text-align: center; /* Center text */
+}
+
+.metric-label {
+  color: rgb(100, 116, 139);
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  color: rgb(15, 23, 42);
+  font-weight: 900;
+  font-size: 32px; /* Slightly larger */
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: -1px;
+}
+
+.metric-divider {
+  width: 1px;
+  height: 50px;
+  background: rgb(241, 245, 249);
+}
+
+/* 2. Table Section */
+.table-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Push to bottom if space allows */
+  flex: 1;
+}
+
+.mini-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.mini-table-header h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: rgb(15, 23, 42);
+  text-transform: uppercase;
+}
+
+.link-mini {
+  font-size: 12px;
+  color: rgb(37, 99, 235);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.mini-table-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mini-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  font-size: 13px;
+  padding: 8px;
+  background: rgb(248, 250, 252);
+  border-radius: 8px;
+  color: rgb(15, 23, 42);
+  font-weight: 600;
+}
+
+.mini-row.head {
+  background: transparent;
+  color: rgb(100, 116, 139);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 0 8px 4px 8px;
+}
+
+.mini-row.empty {
+  text-align: center;
+  display: block;
+  color: rgb(148, 163, 184);
+}
+
+.right {
+  text-align: right;
+}
+
+/* --- Right Action (Clock) --- */
+.card-right-action {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgb(255, 255, 255); /* or faint bg */
+}
+
+.clock-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.icono-reloj-rojo,
+.icono-reloj-verde {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.icono-reloj-rojo {
+  color: rgb(220, 53, 69);
+}
+.icono-reloj-verde {
+  color: rgb(25, 225, 158);
+}
+
+.clock-circle:hover .icono-reloj-rojo,
+.clock-circle:hover .icono-reloj-verde {
+  transform: scale(1.1);
+}
+
+.btn-primary-red,
+.btn-primary-green {
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  color: rgb(255, 255, 255);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+}
+
+.btn-primary-red {
+  background: rgb(220, 53, 69);
+}
+.btn-primary-green {
+  background: rgb(25, 225, 158);
+}
+
+/* Card derecha: MAPA (Side) */
+.card-side {
+  grid-area: side;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgb(226, 232, 240);
+}
+
+.card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+  color: rgb(15, 23, 42);
+}
+
+.map-wrap {
+  margin-top: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 1), rgba(241, 245, 249, 1));
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .grid-home {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'main'
+      'side';
+  }
+}
+
+@media (max-width: 768px) {
+  .card-main {
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .card-left-wrapper {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgb(241, 245, 249);
+    padding: 0 0 24px 0;
+  }
+
+  .card-right-action {
+    width: 100%;
+    padding: 24px 0 0 0;
+  }
+
+  .metrics-row {
+    justify-content: center;
+  }
+}

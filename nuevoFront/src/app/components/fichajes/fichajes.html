@@ -1,0 +1,303 @@
+<div class="table-shell animate__animated animate__fadeIn">
+  <div class="table-head">
+    <div class="table-title">
+      <div class="kicker">Fichajes</div>
+      <div class="h1">Registro de fichajes</div>
+    </div>
+    <div class="table-actions">
+      <!-- User Filter -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filtrar por usuario</mat-label>
+        <mat-select [(ngModel)]="selectedUser" (selectionChange)="onUserFilterChange()">
+          <mat-option [value]="null">Todos los usuarios</mat-option>
+          @for (user of usersList; track user.id) {
+            <mat-option [value]="user.id">{{ user.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Add Button -->
+      <button mat-flat-button class="btn-primary" (click)="openCreate()">
+        <mat-icon>add_alarm</mat-icon>
+        Nuevo Fichaje
+      </button>
+    </div>
+  </div>
+
+  <mat-tab-group class="tabs" (selectedIndexChange)="onTabChange($event)">
+    <mat-tab [label]="'Todos (' + counts.all + ')'"></mat-tab>
+    <mat-tab [label]="'Sin salida (' + counts.open + ')'"></mat-tab>
+    <mat-tab [label]="'Con salida (' + counts.closed + ')'"></mat-tab>
+  </mat-tab-group>
+
+  <div class="table-card mat-elevation-z2">
+    <table mat-table [dataSource]="datasource" class="mat-table">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef class="col-id">Id</th>
+        <td mat-cell *matCellDef="let element" class="col-id">
+          <span class="id-pill">#{{ element.id }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="usuario">
+        <th mat-header-cell *matHeaderCellDef>Usuario</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="user-cell">
+            <span class="avatar">{{ element.usuario?.[0] || 'U' }}</span>
+            <span class="user-name">{{ element.usuario }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="entrada">
+        <th mat-header-cell *matHeaderCellDef>Entrada</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="date-cell">
+            <span class="date-main">{{ element.entrada | date: 'dd/MM/yyyy' }}</span>
+            <span class="date-sub">{{ element.entrada | date: 'HH:mm' }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="salida">
+        <th mat-header-cell *matHeaderCellDef>Salida</th>
+        <td mat-cell *matCellDef="let element">
+          @if (element.salida == null) {
+            <span class="chip chip--warn">Sin salida</span>
+          } @else {
+            <div class="date-cell">
+              <span class="date-main">{{ element.salida | date: 'dd/MM/yyyy' }}</span>
+              <span class="date-sub">{{ element.salida | date: 'HH:mm' }}</span>
+            </div>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="botones">
+        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+        <td mat-cell *matCellDef="let element" class="col-actions">
+          <div class="row-actions">
+            <button
+              mat-icon-button
+              class="icon-btn icon-btn--edit"
+              type="button"
+              (click)="openEdit(element.id)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              class="icon-btn icon-btn--delete"
+              type="button"
+              (click)="deleteTimeEntrie(element.id)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="data-row"></tr>
+    </table>
+
+    <mat-paginator [pageSize]="8" [pageSizeOptions]="[8, 16, 24]" showFirstLastButtons>
+    </mat-paginator>
+
+    @if (datasource.data.length === 0) {
+      <div class="empty">
+        <div class="empty-title">No hay registros en esta pestaña</div>
+        <div class="empty-sub">Prueba con otra pestaña o añade nuevos fichajes.</div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+@if (isEditOpen) {
+  <div class="modal-overlay animate__animated animate__fadeIn" (click)="closeEdit()">
+    <mat-card class="modal-card" appearance="outlined" (click)="$event.stopPropagation()">
+      <mat-card-header class="modal-head">
+        <div class="head-left">
+          <div class="head-icon">
+            <mat-icon>edit_calendar</mat-icon>
+          </div>
+
+          <div class="head-text">
+            <mat-card-title>Editar fichaje</mat-card-title>
+            <mat-card-subtitle>Actualiza usuario, entrada y salida</mat-card-subtitle>
+          </div>
+        </div>
+
+        <button
+          mat-icon-button
+          class="close-btn"
+          type="button"
+          aria-label="Cerrar"
+          (click)="closeEdit()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content class="modal-body">
+        <form #editEntryForm="ngForm" class="form-grid">
+          <!-- Entrada -->
+          <mat-form-field>
+            <mat-label>Entrada</mat-label>
+            <input
+              matInput
+              type="datetime-local"
+              [(ngModel)]="clock_in"
+              name="clock_in"
+              required
+              #editIn="ngModel"
+            />
+            @if (editIn.invalid && (editIn.dirty || editIn.touched)) {
+              <mat-error>La fecha de entrada es obligatoria</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Salida</mat-label>
+            <input matInput type="datetime-local" [(ngModel)]="clock_out" name="clock_out" />
+          </mat-form-field>
+
+          @if (clock_out && clock_in && clock_out < clock_in) {
+            <div class="error-banner">
+              <mat-icon>warning</mat-icon>
+              La salida no puede ser anterior a la entrada
+            </div>
+          }
+
+          <div class="hint">
+            <mat-icon>info</mat-icon>
+            Si no hay salida, deja el campo vacío.
+          </div>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions class="modal-actions" align="end">
+        <button mat-stroked-button class="btn-ghost" type="button" (click)="closeEdit()">
+          Cancelar
+        </button>
+
+        <button
+          mat-raised-button
+          class="btn-primary"
+          type="button"
+          (click)="editTimeEntrie()"
+          [disabled]="editEntryForm.invalid || (clock_out && clock_in && clock_out < clock_in)"
+        >
+          Guardar cambios
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}
+
+<!-- CREATE MODAL -->
+@if (isCreateOpen) {
+  <div class="modal-overlay animate__animated animate__fadeIn" (click)="closeCreate()">
+    <mat-card class="modal-card" appearance="outlined" (click)="$event.stopPropagation()">
+      <mat-card-header class="modal-head">
+        <div class="head-left">
+          <div class="head-icon">
+            <mat-icon>add_alarm</mat-icon>
+          </div>
+
+          <div class="head-text">
+            <mat-card-title>Nuevo fichaje</mat-card-title>
+            <mat-card-subtitle>Registra una nueva entrada/salida</mat-card-subtitle>
+          </div>
+        </div>
+
+        <button
+          mat-icon-button
+          class="close-btn"
+          type="button"
+          aria-label="Cerrar"
+          (click)="closeCreate()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content class="modal-body">
+        <form #createEntryForm="ngForm" class="form-grid">
+          <!-- Usuario Select -->
+          <mat-form-field>
+            <mat-label>Usuario</mat-label>
+            <mat-select
+              [(ngModel)]="newEntry.user_id"
+              name="new_user"
+              required
+              #newUserSelect="ngModel"
+            >
+              @for (user of usersList; track user.id) {
+                <mat-option [value]="user.id">{{ user.name }} ({{ user.email }})</mat-option>
+              }
+            </mat-select>
+            @if (newUserSelect.invalid && (newUserSelect.dirty || newUserSelect.touched)) {
+              <mat-error>Selecciona un usuario</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Entrada -->
+          <mat-form-field>
+            <mat-label>Entrada</mat-label>
+            <input
+              matInput
+              type="datetime-local"
+              [(ngModel)]="newEntry.clock_in"
+              name="new_clock_in"
+              required
+              #newClockIn="ngModel"
+            />
+            @if (newClockIn.invalid && (newClockIn.dirty || newClockIn.touched)) {
+              <mat-error>La fecha de entrada es obligatoria</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Salida -->
+          <mat-form-field>
+            <mat-label>Salida (Opcional)</mat-label>
+            <input
+              matInput
+              type="datetime-local"
+              [(ngModel)]="newEntry.clock_out"
+              name="new_clock_out"
+            />
+          </mat-form-field>
+
+          @if (newEntry.clock_out && newEntry.clock_in && newEntry.clock_out < newEntry.clock_in) {
+            <div class="error-banner">
+              <mat-icon>warning</mat-icon>
+              La salida no puede ser anterior a la entrada
+            </div>
+          }
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions class="modal-actions" align="end">
+        <button mat-stroked-button class="btn-ghost" type="button" (click)="closeCreate()">
+          Cancelar
+        </button>
+
+        <button
+          mat-raised-button
+          class="btn-primary"
+          type="button"
+          (click)="createTimeEntry()"
+          [disabled]="
+            createEntryForm.invalid ||
+            (newEntry.clock_out && newEntry.clock_in && newEntry.clock_out < newEntry.clock_in)
+          "
+        >
+          Crear Fichaje
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}
