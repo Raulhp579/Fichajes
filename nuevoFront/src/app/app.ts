@@ -27,7 +27,7 @@ import { AuthService } from './services/auth-service';
 export class App implements OnInit {
   @ViewChild('drawer') drawer!: MatSidenav;
 
-  protected readonly title = signal('nuevoFront');
+  protected readonly title = signal('Gestor Fichajes');
   protected isAuthPage = signal(false);
   isMobile = signal(false);
   private router = inject(Router);
