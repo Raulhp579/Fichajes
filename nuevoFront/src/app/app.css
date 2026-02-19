@@ -239,3 +239,14 @@
     padding: 8px;
   }
 }
+
+@media (max-width: 360px) {
+  .page {
+    padding: 6px;
+    min-height: calc(100vh - 50px);
+  }
+
+  .barra {
+    width: 240px;
+  }
+}
