@@ -272,7 +272,11 @@
   display: flex;
 }
 
-/* Responsive */
+/* ═══════════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Tablet: stack grid, reflow card-main */
 @media (max-width: 1100px) {
   .grid-home {
     grid-template-columns: 1fr;
@@ -280,27 +284,163 @@
       'main'
       'side';
   }
+
+  .card-side {
+    min-height: 300px;
+  }
+
+  .map-wrap {
+    min-height: 260px;
+  }
 }
 
+/* Mobile landscape / small tablet */
 @media (max-width: 768px) {
   .card-main {
     flex-direction: column;
-    padding: 24px;
+    padding: 0;
+    min-height: auto;
   }
 
   .card-left-wrapper {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid rgb(241, 245, 249);
-    padding: 0 0 24px 0;
+    padding: 20px;
   }
 
   .card-right-action {
     width: 100%;
-    padding: 24px 0 0 0;
+    padding: 20px;
   }
 
   .metrics-row {
+    gap: 20px;
     justify-content: center;
+  }
+
+  .metric-value {
+    font-size: 24px;
+  }
+
+  .metric-label {
+    font-size: 10px;
+  }
+
+  .metric-divider {
+    height: 40px;
+  }
+
+  .icono-reloj-rojo,
+  .icono-reloj-verde {
+    font-size: 60px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .div-titulo {
+    height: 46px;
+    padding: 0 12px;
+    margin-bottom: 14px;
+  }
+}
+
+/* Mobile portrait */
+@media (max-width: 480px) {
+  .grid-home {
+    gap: 12px;
+  }
+
+  .card-main {
+    border-radius: 14px;
+  }
+
+  .card-left-wrapper {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .card-right-action {
+    padding: 16px;
+  }
+
+  .metrics-row {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .metric-value {
+    font-size: 20px;
+    letter-spacing: -0.5px;
+  }
+
+  .metric-label {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
+
+  .metric-divider {
+    display: none;
+  }
+
+  .icono-reloj-rojo,
+  .icono-reloj-verde {
+    font-size: 50px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .btn-primary-red,
+  .btn-primary-green {
+    height: 36px;
+    padding: 0 18px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .mini-row {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .mini-row.head {
+    font-size: 10px;
+  }
+
+  .mini-table-header h3 {
+    font-size: 12px;
+  }
+
+  .link-mini {
+    font-size: 11px;
+  }
+
+  .card-side {
+    padding: 12px;
+    border-radius: 14px;
+    min-height: 250px;
+  }
+
+  .map-wrap {
+    min-height: 220px;
+    border-radius: 12px;
+  }
+
+  .card-title {
+    font-size: 14px;
+  }
+
+  .card {
+    border-radius: 14px;
+  }
+
+  .div-titulo {
+    height: 42px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+
+  .titulo {
+    font-size: 12px;
   }
 }

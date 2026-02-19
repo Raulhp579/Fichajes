@@ -218,13 +218,67 @@ td.mat-mdc-cell {
 }
 
 /* Responsive: en pantallas pequeñas, que respire */
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   th.mat-mdc-header-cell,
   td.mat-mdc-cell {
-    padding: 12px 12px;
+    padding: 12px 10px;
   }
   .col-actions {
     width: 96px;
+  }
+
+  .table-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .filter-field {
+    width: 100%;
+  }
+
+  .table-card {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  th.mat-mdc-header-cell,
+  td.mat-mdc-cell {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  .col-id {
+    display: none;
+  }
+
+  .table-head {
+    gap: 14px;
+    margin: 4px 0 16px;
+  }
+
+  .table-title .h1 {
+    font-size: 16px;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .modal-card {
+    width: min(100%, 96vw);
+    border-radius: 14px;
+  }
+
+  .modal-body {
+    padding: 14px;
+  }
+
+  .modal-actions {
+    padding: 0 14px 14px;
   }
 }
 .tabs {
@@ -361,7 +415,7 @@ mat-paginator {
   background: #fff !important;
 }
 
-/* Quita el “barrita rara” del outline en algunos temas */
+/* Quita el "barrita rara" del outline en algunos temas */
 :host ::ng-deep .mat-mdc-form-field .mdc-notched-outline__leading {
   border-right: 0 !important;
 }

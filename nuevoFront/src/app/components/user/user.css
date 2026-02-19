@@ -296,16 +296,80 @@ mat-paginator {
 }
 
 /* Responsive */
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   th.mat-mdc-header-cell,
   td.mat-mdc-cell {
-    padding: 12px 12px;
+    padding: 12px 10px;
   }
   .email {
-    max-width: 240px;
+    max-width: 200px;
   }
   .col-actions {
     width: 96px;
+  }
+
+  .table-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  .table-card {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  th.mat-mdc-header-cell,
+  td.mat-mdc-cell {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  .col-id {
+    display: none;
+  }
+
+  .email {
+    max-width: 140px;
+    font-size: 12px;
+  }
+
+  .table-head {
+    gap: 14px;
+    margin: 4px 0 16px;
+  }
+
+  .table-title .h1 {
+    font-size: 16px;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .btn-download {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .modal-card {
+    width: min(100%, 96vw);
+    border-radius: 14px;
+  }
+
+  .modal-body {
+    padding: 14px;
+  }
+
+  .modal-actions {
+    padding: 0 14px 14px;
   }
 }
 
